@@ -3,7 +3,7 @@ import java.util.HashMap;
 /**
  * Created by sxh on 07.01.17.
  */
-public class FreeSimplicialAbelianGroup<T> implements SimplicialStructure<FreeSimplicialAbelianGroup.LinearCombination<T>> {
+public class FreeSimplicialAbelianGroup<T> implements SimplicialGroupStructure<FreeSimplicialAbelianGroup.LinearCombination<T>> {
     private SimplicialStructure<T> mySimplicialStructure;
 
     public FreeSimplicialAbelianGroup(SimplicialStructure<T> ss) {
@@ -43,6 +43,18 @@ public class FreeSimplicialAbelianGroup<T> implements SimplicialStructure<FreeSi
         return result;
     }
 
+    public LinearCombination<T> mul(LinearCombination<T> a, LinearCombination<T> b) {
+        return LinearCombination.add(a, b);
+    }
+
+    public LinearCombination<T> inv(LinearCombination<T> a) {
+        return LinearCombination.inv(a);
+    }
+
+    public LinearCombination<T> unit() {
+        return new LinearCombination<T>(0);
+    }
+
     static class LinearCombination<S> {
         private HashMap<S, Integer> myCoo = new HashMap<S, Integer>();
         private int myLevel;
@@ -67,7 +79,6 @@ public class FreeSimplicialAbelianGroup<T> implements SimplicialStructure<FreeSi
         public static<S> LinearCombination<S> inv(LinearCombination<S> a) {
             return sub(new LinearCombination<S>(a.myLevel), a);
         }
-
 
         private static<S> LinearCombination<S> lc(LinearCombination<S> a, LinearCombination<S> b, int ca, int cb) {
             assert (a.myLevel == b.myLevel);
