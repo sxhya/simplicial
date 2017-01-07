@@ -17,7 +17,7 @@ public class Tests {
   @Test
   public void printPermutation() {
     AlphabetGroupStructure ags = new AlphabetGroupStructure();
-    WreathProd<String> wreathProd1 = new WreathProd<String>(new WreathProd<String>(3, ags, 0, 1), new WreathProd<String>(3, ags, 0, 2));
+    WreathProd<String> wreathProd1 = new WreathProd<String>(new WreathProd<>(3, ags, 0, 1), new WreathProd<>(3, ags, 0, 2));
     wreathProd1.setComponent("a", 0);
     wreathProd1.setComponent("b", 1);
     wreathProd1.setComponent("c", 2);
@@ -25,12 +25,16 @@ public class Tests {
     vec.add("d"); vec.add("e"); vec.add("f");
     System.out.print(wreathProd1+"\n");
     System.out.println(wreathProd1.act(vec));
-    /*
-    WreathProd<String> wreathProd2 = new WreathProd<String>(3, ags);
-    wreathProd2.setComponent("d", 0);
-    wreathProd2.setComponent("e", 1);
-    wreathProd2.setComponent("f", 2);
-    System.out.println(new WreathProd<String>(wreathProd1, wreathProd2));*/
+  }
+
+  @Test
+  public void bg() {
+    AlphabetGroupStructure ags = new AlphabetGroupStructure();
+    ClassifyingSpace<String> cs = new ClassifyingSpace<>();
+    ArrayList<String> l = new ArrayList<>();
+    l.add("a"); l.add("b"); l.add("c");
+    ClassifyingSpace.ClassifyingSpaceElement<String> cse = new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l);
+    assert SimplicialStructure.isValid(cs, cse);
   }
 
 }
