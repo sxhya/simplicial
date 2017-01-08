@@ -31,7 +31,7 @@ class Horn<T> {
     if (n + 1 != mySimplices.size()) return false;
 
     for (int i=0; i<=n; i++)
-      for (int j=i+1; i<=n; j++)
+      for (int j=i+1; j<=n; j++)
         if (i != k && j != k) {
           T x = mySimplicialStructure.face(mySimplices.get(j), i);
           T y = mySimplicialStructure.face(mySimplices.get(i), j-1);
