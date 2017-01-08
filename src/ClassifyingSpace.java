@@ -71,5 +71,10 @@ public class ClassifyingSpace<T> implements SimplicialStructure<ClassifyingSpace
         public int hashCode() {
             return myVector.hashCode();
         }
+
+        @Override
+        public String toString() {
+            return myVector.toString();
+        }
     }
 }

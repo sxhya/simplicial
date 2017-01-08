@@ -22,11 +22,11 @@ public class FreeSimplicialAbelianGroup<T> implements SimplicialGroupStructure<F
     @Override
     public LinearCombination<T> face(LinearCombination<T> simplicialObject, int k) {
         int n = simplicialObject.myLevel;
-        LinearCombination<T> result = new LinearCombination<T>(n);
+        LinearCombination<T> result = new LinearCombination<T>(n-1);
 
         for (T t : simplicialObject.myCoo.keySet())
-            result = LinearCombination.add(result,
-                    new LinearCombination<T>(mySimplicialStructure.face(t, k), n-1));
+            result = LinearCombination.lc(result,
+                    new LinearCombination<T>(mySimplicialStructure.face(t, k), n-1), 1, simplicialObject.myCoo.get(t));
 
         return result;
     }
@@ -34,11 +34,11 @@ public class FreeSimplicialAbelianGroup<T> implements SimplicialGroupStructure<F
     @Override
     public LinearCombination<T> degeneracy(LinearCombination<T> simplicialObject, int k) {
         int n = simplicialObject.myLevel;
-        LinearCombination<T> result = new LinearCombination<T>(n);
+        LinearCombination<T> result = new LinearCombination<T>(n+1);
 
         for (T t : simplicialObject.myCoo.keySet())
-            result = LinearCombination.add(result,
-                    new LinearCombination<T>(mySimplicialStructure.degeneracy(t, k), n+1));
+            result = LinearCombination.lc(result,
+                    new LinearCombination<T>(mySimplicialStructure.degeneracy(t, k), n+1), 1, simplicialObject.myCoo.get(t));
 
         return result;
     }
@@ -63,9 +63,37 @@ public class FreeSimplicialAbelianGroup<T> implements SimplicialGroupStructure<F
             myLevel = level;
         }
 
+        @Override
+        public int hashCode() {
+            return myCoo.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof LinearCombination) {
+                return ((LinearCombination) o).myCoo.equals(myCoo);
+            }
+            return false;
+        }
+
         public LinearCombination(S s, int level) {
             myLevel = level;
             myCoo.put(s, 1);
+        }
+
+        @Override
+        public String toString() {
+            String result = "";
+            for (S s : myCoo.keySet()) {
+                int v = myCoo.get(s);
+                if (v != 0) {
+                    String sign = v > 0 ? "+" : "-";
+                    v = Math.abs(v);
+                    if (v == 1) result += " "+sign+s.toString(); else
+                        result += " "+sign+String.valueOf(v)+"*"+s.toString();
+                }
+            }
+            return result;
         }
 
         static<S> LinearCombination<S> add(LinearCombination<S> a, LinearCombination<S> b) {

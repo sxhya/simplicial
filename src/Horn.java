@@ -15,6 +15,13 @@ public class Horn<T> {
     if (!isValid()) throw new IllegalArgumentException();
   }
 
+  public Horn(SimplicialStructure<T> str, T t, int k) {
+    mySimplicialStructure = str;
+    int n = str.getLevel(t);
+    for (int i=0; i<=n; i++) mySimplices.add(str.face(t, i));
+    mySimplices.set(k, null);
+  }
+
   public boolean isValid() {
     int n = getIndex();
     int k = getHoleNum();
@@ -43,14 +50,40 @@ public class Horn<T> {
 
   public int getIndex(){
     if (mySimplices.isEmpty()) throw new IllegalStateException();
-    int index = mySimplicialStructure.getLevel(mySimplices.get(0));
-    for (T t : mySimplices) if (mySimplicialStructure.getLevel(t)!=index) throw new IllegalStateException();
+    int index = -1;
+    for (T t : mySimplices) if (t != null) {
+      if (index == -1) index = mySimplicialStructure.getLevel(t); else
+      if (mySimplicialStructure.getLevel(t) != index) throw new IllegalStateException();
+    }
+    if (index == -1) throw new IllegalStateException();
     return index+1;
+  }
+
+  public T getSimplex(int i) {
+    return mySimplices.get(i);
   }
 
   public SimplicialStructure<T> getSimplicialStructure() {
     return mySimplicialStructure;
   }
 
+  @Override
+  public String toString() {
+    String result = "";
+    boolean needComma = false;
+    for (T t : mySimplices) {
+      if (needComma) result += ", ";
+      needComma = true;
+      if (t != null) result += t; else result += "==";
+    }
+    return result;
+  }
 
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Horn) {
+      return ((Horn) o).mySimplices.equals(this.mySimplices);
+    }
+    return false;
+  }
 }

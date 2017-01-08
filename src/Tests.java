@@ -37,4 +37,33 @@ public class Tests {
     assert SimplicialStructure.isValid(cs, cse);
   }
 
+  @Test
+  public void moore(){
+    ClassifyingSpace<String> bg = new ClassifyingSpace<String>();
+    AlphabetGroupStructure ags = new AlphabetGroupStructure();
+    List<String> l = new ArrayList<>(); l.add("xoXo"); l.add("jojojo"); l.add("lslsl");
+    ClassifyingSpace.ClassifyingSpaceElement<String> cse1 = new ClassifyingSpace.ClassifyingSpaceElement<String>(ags, l);
+    l = new ArrayList<>(); l.add("A"); l.add("sh"); l.add("aha");
+    ClassifyingSpace.ClassifyingSpaceElement<String> cse2 = new ClassifyingSpace.ClassifyingSpaceElement<String>(ags, l);
+    l = new ArrayList<>(); l.add("A"); l.add("sh"); l.add("ch");
+    ClassifyingSpace.ClassifyingSpaceElement<String> cse3 = new ClassifyingSpace.ClassifyingSpaceElement<String>(ags, l);
+
+    FreeSimplicialAbelianGroup<ClassifyingSpace.ClassifyingSpaceElement<String>> sag = new FreeSimplicialAbelianGroup<>(bg);
+    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> lin =
+      new FreeSimplicialAbelianGroup.LinearCombination<>(cse1, 3);
+    lin = FreeSimplicialAbelianGroup.LinearCombination.sub(lin, new FreeSimplicialAbelianGroup.LinearCombination<>(cse2, 3));
+    lin = FreeSimplicialAbelianGroup.LinearCombination.add(lin, new FreeSimplicialAbelianGroup.LinearCombination<>(cse3, 3));
+    for (int k = 0; k <= 3; k++) {
+      System.out.println("k=" + k);
+      Horn<FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>>> horn = new Horn<>(sag, lin, k);
+      System.out.println("Original combination: " + lin);
+      System.out.println("Corresponding horn: " + horn);
+      FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> filler = SimplicialGroupStructure.findFiller(sag, horn);
+      System.out.println("Filler: " + filler);
+      Horn<FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>>> horn2 = new Horn<>(sag, filler, k);
+      System.out.println("Filler horn:        " + horn2);
+      assert(horn.equals(horn2));
+    }
+  }
+
 }
