@@ -4,7 +4,7 @@ import java.util.List;
 /**
  * Created by sxh on 07.01.17.
  */
-public class Horn<T> {
+class Horn<T> {
   private SimplicialStructure<T> mySimplicialStructure;
   private List<T> mySimplices = new ArrayList<>();
 
@@ -15,14 +15,16 @@ public class Horn<T> {
     if (!isValid()) throw new IllegalArgumentException();
   }
 
-  public Horn(SimplicialStructure<T> str, T t, int k) {
+  Horn(SimplicialStructure<T> str, T t, int k) {
     mySimplicialStructure = str;
     int n = str.getLevel(t);
     for (int i=0; i<=n; i++) mySimplices.add(str.face(t, i));
     mySimplices.set(k, null);
+
+    if (!isValid()) throw new IllegalArgumentException();
   }
 
-  public boolean isValid() {
+  private boolean isValid() {
     int n = getIndex();
     int k = getHoleNum();
 
@@ -38,7 +40,7 @@ public class Horn<T> {
     return true;
   }
 
-  public int getHoleNum(){
+  int getHoleNum(){
     int prev = -1;
     for (int i = 0; i < mySimplices.size(); i++) {
       if (prev == -1 && mySimplices.get(i) == null) prev = i; else
@@ -48,7 +50,7 @@ public class Horn<T> {
     return prev;
   }
 
-  public int getIndex(){
+  int getIndex(){
     if (mySimplices.isEmpty()) throw new IllegalStateException();
     int index = -1;
     for (T t : mySimplices) if (t != null) {
@@ -59,11 +61,11 @@ public class Horn<T> {
     return index+1;
   }
 
-  public T getSimplex(int i) {
+  T getSimplex(int i) {
     return mySimplices.get(i);
   }
 
-  public SimplicialStructure<T> getSimplicialStructure() {
+  SimplicialStructure<T> getSimplicialStructure() {
     return mySimplicialStructure;
   }
 
