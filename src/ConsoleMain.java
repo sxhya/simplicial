@@ -25,7 +25,7 @@ public class ConsoleMain {
   }
 
   public static void main(String[] args) {
-    AlphabetGroupStructure ags = new AlphabetGroupStructure();
+    AlphabetGroupStructure ags = AlphabetGroupStructure.INSTANCE;
     ClassifyingSpace<String> bg = new ClassifyingSpace<String>();
     FreeSimplicialAbelianGroup<ClassifyingSpace.ClassifyingSpaceElement<String>> sag = new FreeSimplicialAbelianGroup<>(bg);
 
@@ -37,49 +37,49 @@ public class ConsoleMain {
     ChainLink<String> last = new ChainLink<String>(wp, wp, basePoint, twistedPoint);
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, new int[]{1, 0 ,2});
+    last = new ChainLink<>(last, new int[]{1, 0 ,2});
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, basePoint);
+    last = new ChainLink<>(last, basePoint);
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, new int[]{1, 0 ,2});
+    last = new ChainLink<>(last, new int[]{1, 0 ,2});
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, twistedPointB);
+    last = new ChainLink<>(last, twistedPointB);
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, new int[]{2, 1 ,0});
+    last = new ChainLink<>(last, new int[]{2, 1 ,0});
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, basePoint);
+    last = new ChainLink<>(last, basePoint);
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, new int[]{2, 1 ,0});
+    last = new ChainLink<>(last, new int[]{2, 1 ,0});
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, new int[]{1, 0 ,2});
+    last = new ChainLink<>(last, new int[]{1, 0 ,2});
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, twistedPoint);
+    last = new ChainLink<>(last, twistedPoint);
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, new int[]{1, 0 ,2});
+    last = new ChainLink<>(last, new int[]{1, 0 ,2});
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, basePoint);
+    last = new ChainLink<>(last, basePoint);
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, new int[]{2, 1 ,0});
+    last = new ChainLink<>(last, new int[]{2, 1 ,0});
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, twistedPointB);
+    last = new ChainLink<>(last, twistedPointB);
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, new int[]{2, 1 ,0});
+    last = new ChainLink<>(last, new int[]{2, 1 ,0});
     System.out.println(last); path.add(last);
 
-    last = new ChainLink<String>(last, basePoint);
+    last = new ChainLink<>(last, basePoint);
     System.out.println(last); path.add(last);
 
     //Project to S:
@@ -123,6 +123,18 @@ public class ConsoleMain {
       System.out.print("i="+ i + " [" + diff1 + ", " + diff2 + "]" + " Cumulative = ["+com1+"; "+com2+"]; ");
       System.out.println("HORN: "+ horn + ";\n Filler: "+com_simplex+"\n 1-edge: "+sag.face(com_simplex,2)+"\n");
     }
+
+    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> me = Tests.m("AB");
+    me = FreeSimplicialAbelianGroup.LinearCombination.sub(FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 0), 0)),
+      sag.degeneracy(sag.face(me, 2), 1));
+    System.out.println("Me: "+me);
+    me = FreeSimplicialAbelianGroup.LinearCombination.sub(com_simplex, me);
+    System.out.println("Diff: "+me);
+
+    System.out.println("diff 0 = " + sag.face(me, 0));
+    System.out.println("diff 1 = " + sag.face(me, 1));
+    System.out.println("diff 2 = " + sag.face(me, 2));
+
 
     /*WreathProd<String> wreathProd1 = new WreathProd<String>(, new WreathProd<String>(3, ags, 0, 2));
     wreathProd1.setComponent("a", 0);

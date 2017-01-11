@@ -40,7 +40,7 @@ public class Tests {
   @Test
   public void moore(){
     ClassifyingSpace<String> bg = new ClassifyingSpace<String>();
-    AlphabetGroupStructure ags = new AlphabetGroupStructure();
+    AlphabetGroupStructure ags = AlphabetGroupStructure.INSTANCE;
     List<String> l = new ArrayList<>(); l.add("xoXo"); l.add("jojojo"); l.add("lslsl");
     ClassifyingSpace.ClassifyingSpaceElement<String> cse1 = new ClassifyingSpace.ClassifyingSpaceElement<String>(ags, l);
     l = new ArrayList<>(); l.add("A"); l.add("sh"); l.add("aha");
@@ -64,6 +64,74 @@ public class Tests {
       System.out.println("Filler horn:        " + horn2);
       assert(horn.equals(horn2));
     }
+  }
+
+  public static FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>>
+   g(String x, String y) {
+    AlphabetGroupStructure ags = AlphabetGroupStructure.INSTANCE;
+    List<String> l = new ArrayList<>(); l.add(x); l.add(y);
+    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> result =
+      new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 2);
+    l = new ArrayList<>(); l.add(y); l.add(x);
+    result = FreeSimplicialAbelianGroup.LinearCombination.sub(result,
+      new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 2));
+    l = new ArrayList<>(); l.add(y+x); l.add(ags.inv(y+x));
+    result = FreeSimplicialAbelianGroup.LinearCombination.sub(result,
+      new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 2));
+    l = new ArrayList<>(); l.add(x+y); l.add(ags.inv(y+x));
+    result = FreeSimplicialAbelianGroup.LinearCombination.add(result,
+      new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 2));
+    return result;
+  }
+
+  public static FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>>
+   m(String... w) {
+    AlphabetGroupStructure ags = AlphabetGroupStructure.INSTANCE;
+    String[] xs = new String[w.length];
+    String[] ys = new String[w.length];
+    for (int i=0; i<w.length; i++) {
+      if (w[i].length() != 2) throw new IllegalArgumentException();
+      xs[i] = String.valueOf(w[i].charAt(0));
+      ys[i] = String.valueOf(w[i].charAt(1));
+    }
+    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> result =
+      new FreeSimplicialAbelianGroup.LinearCombination<>(2);
+    String s = "";
+    for (int i=0; i < w.length; i++) {
+      s += GroupStructure.comm(ags, xs[i], ys[i]);
+      if (i < w.length - 1) {
+        String d = GroupStructure.comm(ags, xs[i+1], ys[i+1]);
+        List<String> l = new ArrayList<>(); l.add(s); l.add(d);
+        result = FreeSimplicialAbelianGroup.LinearCombination.add(result,
+          new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 2));
+        l = new ArrayList<>(); l.add(""); l.add("");
+        result = FreeSimplicialAbelianGroup.LinearCombination.sub(result,
+          new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 2));
+      }
+      result = FreeSimplicialAbelianGroup.LinearCombination.add(result, g(xs[i], ys[i]));
+    }
+
+    return result;
+  }
+
+  @Test
+  public void miller(){
+    ClassifyingSpace<String> bg = new ClassifyingSpace<String>();
+    FreeSimplicialAbelianGroup<ClassifyingSpace.ClassifyingSpaceElement<String>> sag = new FreeSimplicialAbelianGroup<>(bg);
+    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> me = m("AB");
+
+    me = FreeSimplicialAbelianGroup.LinearCombination.sub(FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 0), 0)),
+      sag.degeneracy(sag.face(me, 2), 1));
+
+    System.out.println("me = " + me);
+
+    System.out.println("d0 = " + sag.face(me, 0));
+    System.out.println("d1 = " + sag.face(me, 1));
+    System.out.println("d2 = " + sag.face(me, 2));
+
+    me = FreeSimplicialAbelianGroup.LinearCombination.add(FreeSimplicialAbelianGroup.LinearCombination.sub(sag.face(me, 0), sag.face(me, 1)), sag.face(me, 2));
+    System.out.println("d0 - d1 + d2 = " + me);
+
   }
 
 }

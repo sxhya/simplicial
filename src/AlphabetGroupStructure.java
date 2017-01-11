@@ -1,7 +1,11 @@
+import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
+
 /**
  * Created by sxh on 28.12.16.
  */
 public class AlphabetGroupStructure implements GroupStructure<String> {
+  public static final AlphabetGroupStructure INSTANCE = new AlphabetGroupStructure();
+
   @Override
   public String mul(String a, String b) {
     return AlphabetGroupStructure.simplify(a+b);
