@@ -139,7 +139,7 @@ public class ConsoleMain {
       com1 = WreathProd.componentwise_mul(ags, com1, diff1);
       com2 = WreathProd.componentwise_mul(ags, com2, diff2);
       System.out.println("i="+ i + " [" + diff1 + ", " + diff2 + "]" + " Cumulative = ["+com1+"; "+com2+"];");
-      //System.out.println("HORN: "+ horn + ";\n Filler: "+com_simplex+"\n 1-edge: "+sag.face(com_simplex,2)+"\n");
+      System.out.println("HORN: "+ horn + ";\n Filler: "+com_simplex+"\n 1-edge: "+sag.face(com_simplex,2)+"\n");
     }
 
     System.out.println();
