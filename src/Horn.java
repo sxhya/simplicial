@@ -14,7 +14,6 @@ class Horn<T> {
 
     if (!isValid())
       throw new IllegalArgumentException();
-    else System.out.println("Valid horn");
   }
 
   Horn(SimplicialStructure<T> str, T t, int k) {
@@ -24,7 +23,6 @@ class Horn<T> {
     mySimplices.set(k, null);
 
     if (!isValid()) throw new IllegalArgumentException();
-    else System.out.println("Valid horn");
   }
 
   private boolean isValid() {

@@ -120,8 +120,8 @@ public class Tests {
     FreeSimplicialAbelianGroup<ClassifyingSpace.ClassifyingSpaceElement<String>> sag = new FreeSimplicialAbelianGroup<>(bg);
     FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> me = m("AB");
 
-    me = FreeSimplicialAbelianGroup.LinearCombination.sub(FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 0), 0)),
-      sag.degeneracy(sag.face(me, 2), 1));
+    me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 0), 0));
+    me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 1), 1));
 
     System.out.println("me = " + me);
 

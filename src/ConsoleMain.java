@@ -120,14 +120,17 @@ public class ConsoleMain {
       //System.out.println("i="+ i + " [" + x0 + ", " + y0 + "; " + x1 + ", " + y1 + "]");
       com1 = WreathProd.componentwise_mul(ags, com1, diff1);
       com2 = WreathProd.componentwise_mul(ags, com2, diff2);
-      System.out.print("i="+ i + " [" + diff1 + ", " + diff2 + "]" + " Cumulative = ["+com1+"; "+com2+"]; ");
-      System.out.println("HORN: "+ horn + ";\n Filler: "+com_simplex+"\n 1-edge: "+sag.face(com_simplex,2)+"\n");
+      System.out.print("i="+ i + " [" + diff1 + ", " + diff2 + "]" + " Cumulative = ["+com1+"; "+com2+"];\n ");
+      //System.out.println("HORN: "+ horn + ";\n Filler: "+com_simplex+"\n 1-edge: "+sag.face(com_simplex,2)+"\n");
     }
 
     FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> me = Tests.m("AB");
-    me = FreeSimplicialAbelianGroup.LinearCombination.sub(FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 0), 0)),
-      sag.degeneracy(sag.face(me, 2), 1));
-    System.out.println("Me: "+me);
+
+    me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 0), 0));
+    me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 1), 1));
+
+    System.out.println("Simplex: "+com_simplex);
+    System.out.println("Miller : "+me);
     me = FreeSimplicialAbelianGroup.LinearCombination.sub(com_simplex, me);
     System.out.println("Diff: "+me);
 
