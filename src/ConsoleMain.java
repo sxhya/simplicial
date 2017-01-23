@@ -35,58 +35,71 @@ public class ConsoleMain {
     WreathProd<String> wp = new WreathProd<String>(3, ags);
     List<ChainLink<String>> path = new LinkedList<ChainLink<String>>();
     ChainLink<String> last = new ChainLink<String>(wp, wp, basePoint, twistedPoint);
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, new int[]{1, 0 ,2});
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, basePoint);
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, new int[]{1, 0 ,2});
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, twistedPointB);
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, new int[]{2, 1 ,0});
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, basePoint);
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, new int[]{2, 1 ,0});
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, new int[]{1, 0 ,2});
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, twistedPoint);
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, new int[]{1, 0 ,2});
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, basePoint);
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, new int[]{2, 1 ,0});
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, twistedPointB);
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, new int[]{2, 1 ,0});
-    System.out.println(last); path.add(last);
+    path.add(last);
 
     last = new ChainLink<>(last, basePoint);
-    System.out.println(last); path.add(last);
+    path.add(last);
+
+    WreathStructure<String> wreathStructure = new WreathStructure<>(ags, 3);
 
     //Project to S:
 
     for (int i=0; i<path.size(); i++) {
-      System.out.println("i="+ i + " " + new WreathProd<String>(new WreathProd<String>(path.get(i).g0), path.get(i).g1));
+      System.out.println("i="+i+" ["+path.get(i).x1+", "+path.get(i).g1+"]");
     }
+
+    System.out.println();
+
+    for (int i=0; i<path.size(); i++) {
+      WreathProd<String> wprod = new WreathProd<String>(new WreathProd<String>(path.get(i).g0), path.get(i).g1);
+      if (wprod.equals(wreathStructure.unit()))
+        continue;
+      System.out.println("i="+ i + " " + wprod);
+    }
+
+    System.out.println();
 
     List<String> com1 = new ArrayList<>(); com1.add(""); com1.add(""); com1.add("");
     List<String> com2 = new ArrayList<>(); com2.add(""); com2.add(""); com2.add("");
@@ -101,6 +114,11 @@ public class ConsoleMain {
       List<String> y1 = path.get(i).g1.act(x1);
       List<String> diff1 = WreathProd.componentwise_mul(ags, WreathProd.componentwise_inv(ags, x0), x1);
       List<String> diff2 = WreathProd.componentwise_mul(ags, WreathProd.componentwise_inv(ags, y0), y1);
+
+      if (diff1.equals(wreathStructure.unit().getVector()) && diff2.equals(wreathStructure.unit().getVector())) {
+        continue;
+      }
+
       //convert diff1 & diff2 to
 
       FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> lin =
@@ -120,9 +138,11 @@ public class ConsoleMain {
       //System.out.println("i="+ i + " [" + x0 + ", " + y0 + "; " + x1 + ", " + y1 + "]");
       com1 = WreathProd.componentwise_mul(ags, com1, diff1);
       com2 = WreathProd.componentwise_mul(ags, com2, diff2);
-      System.out.print("i="+ i + " [" + diff1 + ", " + diff2 + "]" + " Cumulative = ["+com1+"; "+com2+"];\n ");
+      System.out.println("i="+ i + " [" + diff1 + ", " + diff2 + "]" + " Cumulative = ["+com1+"; "+com2+"];");
       //System.out.println("HORN: "+ horn + ";\n Filler: "+com_simplex+"\n 1-edge: "+sag.face(com_simplex,2)+"\n");
     }
+
+    System.out.println();
 
     FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> me = Tests.m("AB");
 

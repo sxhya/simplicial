@@ -155,4 +155,23 @@ public class WreathProd<T> {
     for (int i = 0; i < l1.size(); i++) result.add(groupStructure.inv(l1.get(i)));
     return result;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof WreathProd) {
+      WreathProd wp = (WreathProd) obj;
+      if (wp.myPermutation.length != myPermutation.length) return false;
+      for (int i=0; i<myPermutation.length; i++) if (wp.myPermutation[i] != myPermutation[i]) return false;
+      return wp.myVector.equals(myVector);
+    }
+    return false;
+  }
+
+  public List<T> getVector(){
+    return myVector;
+  }
+
+  public int[] getPermutation(){
+    return myPermutation;
+  }
 }
