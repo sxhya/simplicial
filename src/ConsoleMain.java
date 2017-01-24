@@ -180,6 +180,27 @@ public class ConsoleMain {
     me = FreeSimplicialAbelianGroup.LinearCombination.add(com_simplex2, me);
     System.out.println("Diff: "+me);
 
+    List<String> l = new ArrayList<>(); l.add("A"); l.add(""); l.add("");
+    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> b
+      =  new FreeSimplicialAbelianGroup.LinearCombination<>(3);
+    b = FreeSimplicialAbelianGroup.LinearCombination.sub(b, new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 3));
+    b = FreeSimplicialAbelianGroup.LinearCombination.sub(b, new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 3));
+
+    l = new ArrayList<>(); l.add("A"); l.add(""); l.add("B");   b = FreeSimplicialAbelianGroup.LinearCombination.add(b, new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 3));
+    l = new ArrayList<>(); l.add("AB"); l.add(""); l.add("A");  b = FreeSimplicialAbelianGroup.LinearCombination.sub(b, new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 3));
+    l = new ArrayList<>(); l.add("BA"); l.add(""); l.add("");   b = FreeSimplicialAbelianGroup.LinearCombination.add(b, new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 3));
+    l = new ArrayList<>(); l.add("ABa"); l.add(""); l.add("");  b = FreeSimplicialAbelianGroup.LinearCombination.add(b, new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 3));
+    l = new ArrayList<>(); l.add("AB"); l.add("a"); l.add("b"); b = FreeSimplicialAbelianGroup.LinearCombination.sub(b, new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 3));
+    l = new ArrayList<>(); l.add("BA"); l.add("a"); l.add("b"); b = FreeSimplicialAbelianGroup.LinearCombination.add(b, new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 3));
+    l = new ArrayList<>(); l.add("B"); l.add("A"); l.add("a");  b = FreeSimplicialAbelianGroup.LinearCombination.sub(b, new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 3));
+    l = new ArrayList<>(); l.add("A"); l.add("B"); l.add("b");  b = FreeSimplicialAbelianGroup.LinearCombination.add(b, new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 3));
+
+
+
+    me = FreeSimplicialAbelianGroup.LinearCombination.add(me, FreeSimplicialAbelianGroup.LinearCombination.add(sag.face(b, 0), FreeSimplicialAbelianGroup.LinearCombination.sub(sag.face(b, 2),
+      FreeSimplicialAbelianGroup.LinearCombination.add(sag.face(b, 1), sag.face(b, 3)))));
+    System.out.println("Diff: "+me);
+
     System.out.println("diff 0 = " + sag.face(me, 0));
     System.out.println("diff 1 = " + sag.face(me, 1));
     System.out.println("diff 2 = " + sag.face(me, 2));
