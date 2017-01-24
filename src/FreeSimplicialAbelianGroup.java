@@ -56,8 +56,8 @@ public class FreeSimplicialAbelianGroup<T> implements SimplicialGroupStructure<F
     }
 
     static class LinearCombination<S> {
-        private HashMap<S, Integer> myCoo = new HashMap<S, Integer>();
-        private int myLevel;
+        public HashMap<S, Integer> myCoo = new HashMap<S, Integer>();
+        public int myLevel;
 
         public LinearCombination(int level) {
             myLevel = level;

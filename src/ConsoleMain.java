@@ -24,6 +24,20 @@ public class ConsoleMain {
     return lin;
   }
 
+  public static<T> FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<T>> rotate(GroupStructure<T> ags,
+                                                                                                                    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<T>> lin) {
+    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<T>> lin2 = new FreeSimplicialAbelianGroup.LinearCombination<>(2);
+    for (ClassifyingSpace.ClassifyingSpaceElement<T> cse : lin.myCoo.keySet()) {
+      List<T> lst = cse.myVector;
+      List<T> lst2 = new ArrayList<>();
+      lst2.add(ags.mul(lst.get(0), lst.get(1)));
+      lst2.add(ags.inv(lst.get(1)));
+      ClassifyingSpace.ClassifyingSpaceElement<T> cse2 = new ClassifyingSpace.ClassifyingSpaceElement<>(ags, lst2);
+      lin2.myCoo.put(cse2, lin.myCoo.get(cse));
+    }
+    return lin2;
+  }
+
   public static void main(String[] args) {
     AlphabetGroupStructure ags = AlphabetGroupStructure.INSTANCE;
     ClassifyingSpace<String> bg = new ClassifyingSpace<String>();
@@ -107,6 +121,9 @@ public class ConsoleMain {
     FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> com_simplex =
       new FreeSimplicialAbelianGroup.LinearCombination<>(2);
 
+    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> com_simplex2 =
+      new FreeSimplicialAbelianGroup.LinearCombination<>(2);
+
     for (int i=0; i<path.size(); i++) {
       List<String> x0 = path.get(i).x0;
       List<String> y0 = path.get(i).g0.act(x0);
@@ -124,6 +141,8 @@ public class ConsoleMain {
       FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> lin =
         FreeSimplicialAbelianGroup.LinearCombination.sub(zip(ags, com1, diff1), zip(ags, com2, diff2));
 
+      com_simplex2 = FreeSimplicialAbelianGroup.LinearCombination.sub(lin, rotate(ags, com_simplex2));
+
       FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> zero_simplex =
         new FreeSimplicialAbelianGroup.LinearCombination<>(2);
 
@@ -140,6 +159,7 @@ public class ConsoleMain {
       com2 = WreathProd.componentwise_mul(ags, com2, diff2);
       System.out.println("i="+ i + " [" + diff1 + ", " + diff2 + "]" + " Cumulative = ["+com1+"; "+com2+"];");
       System.out.println("HORN: "+ horn + ";\n Filler: "+com_simplex+"\n 1-edge: "+sag.face(com_simplex,2)+"\n");
+      System.out.println("ALTERNATIVE COM_SIMPLEX: "+ com_simplex2);
     }
 
     System.out.println();
@@ -147,11 +167,17 @@ public class ConsoleMain {
     FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> me = Tests.m("AB");
 
     me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 0), 0));
-    me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 1), 1));
+    me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 2), 1));
 
-    System.out.println("Simplex: "+com_simplex);
+    //System.out.println("Simplex: "+com_simplex);
+    System.out.println("Simplex_2: "+com_simplex2);
     System.out.println("Miller : "+me);
-    me = FreeSimplicialAbelianGroup.LinearCombination.sub(com_simplex, me);
+
+    System.out.println("diffM 0 = " + sag.face(me, 0));
+    System.out.println("diffM 1 = " + sag.face(me, 1));
+    System.out.println("diffM 2 = " + sag.face(me, 2));
+
+    me = FreeSimplicialAbelianGroup.LinearCombination.add(com_simplex2, me);
     System.out.println("Diff: "+me);
 
     System.out.println("diff 0 = " + sag.face(me, 0));

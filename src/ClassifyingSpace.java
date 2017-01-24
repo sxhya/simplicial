@@ -44,8 +44,8 @@ public class ClassifyingSpace<T> implements SimplicialStructure<ClassifyingSpace
      * Created by sxh on 07.01.17.
      */
     public static class ClassifyingSpaceElement<T extends  Object> {
-        private GroupStructure<T> myGroupStructure;
-        private List<T> myVector;
+        public GroupStructure<T> myGroupStructure;
+        public List<T> myVector;
 
         public ClassifyingSpaceElement(GroupStructure<T> gs, List<T> v) {
             myVector = v;
