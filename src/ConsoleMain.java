@@ -141,7 +141,7 @@ public class ConsoleMain {
       FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> lin =
         FreeSimplicialAbelianGroup.LinearCombination.sub(zip(ags, com1, diff1), zip(ags, com2, diff2));
 
-      com_simplex2 = FreeSimplicialAbelianGroup.LinearCombination.sub(lin, rotate(ags, com_simplex2));
+      com_simplex2 = rotate(ags, FreeSimplicialAbelianGroup.LinearCombination.sub(lin, com_simplex2));
 
       FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> zero_simplex =
         new FreeSimplicialAbelianGroup.LinearCombination<>(2);
@@ -164,10 +164,10 @@ public class ConsoleMain {
 
     System.out.println();
 
-    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> me = Tests.m("AB");
+    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> me = Tests.m(true, "AB");
 
     me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 0), 0));
-    me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 2), 1));
+    me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 1), 1));
 
     //System.out.println("Simplex: "+com_simplex);
     System.out.println("Simplex_2: "+com_simplex2);
