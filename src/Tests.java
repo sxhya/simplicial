@@ -85,7 +85,7 @@ public class Tests {
   }
 
   public static FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>>
-   m(String... w) {
+   m(boolean commutative, String... w) {
     AlphabetGroupStructure ags = AlphabetGroupStructure.INSTANCE;
     String[] xs = new String[w.length];
     String[] ys = new String[w.length];
@@ -97,7 +97,7 @@ public class Tests {
     FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> result =
       new FreeSimplicialAbelianGroup.LinearCombination<>(2);
     String s = "";
-    for (int i=0; i < w.length; i++) {
+    for (int i=0; i < w.length; i++) if (!commutative) {
       s += GroupStructure.comm(ags, xs[i], ys[i]);
       if (i < w.length - 1) {
         String d = GroupStructure.comm(ags, xs[i+1], ys[i+1]);
@@ -109,6 +109,12 @@ public class Tests {
           new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 2));
       }
       result = FreeSimplicialAbelianGroup.LinearCombination.add(result, g(xs[i], ys[i]));
+    } else {
+      List<String> l = new ArrayList<>(); l.add(xs[i]); l.add(ys[i]);
+      List<String> l2 = new ArrayList<>(); l2.add(ys[i]); l2.add(xs[i]);
+      result = FreeSimplicialAbelianGroup.LinearCombination.add(result, FreeSimplicialAbelianGroup.LinearCombination.sub
+        (new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l), 2),
+        new FreeSimplicialAbelianGroup.LinearCombination<>(new ClassifyingSpace.ClassifyingSpaceElement<>(ags, l2), 2)));
     }
 
     return result;
@@ -118,7 +124,7 @@ public class Tests {
   public void miller(){
     ClassifyingSpace<String> bg = new ClassifyingSpace<String>();
     FreeSimplicialAbelianGroup<ClassifyingSpace.ClassifyingSpaceElement<String>> sag = new FreeSimplicialAbelianGroup<>(bg);
-    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> me = m("AB");
+    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> me = m(false, "AB");
 
     me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 0), 0));
     me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 1), 1));
