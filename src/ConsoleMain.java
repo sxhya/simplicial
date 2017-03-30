@@ -38,6 +38,34 @@ public class ConsoleMain {
     return lin2;
   }
 
+  public static<T> List<ChainLink<T>> wpath(GroupStructure<T> ags, List<T> bP, WreathProd<T> wp, int i, int j, T gen) {
+    List<ChainLink<T>> result = new LinkedList<ChainLink<T>>();
+    List<T> tP = new ArrayList<>();
+    int n = bP.size();
+    for (int s=0; s<n; s++) {
+      if (s == i) tP.add(ags.mul(gen, bP.get(s)));
+         else tP.add(bP.get(s));
+    }
+    ChainLink<T> last = new ChainLink<>(wp, wp, bP, tP);
+    result.add(last);
+
+    int[] sigma = new int[n];
+    for (int s=0; s<n; s++)
+      if (s == i) sigma[s] = j; else
+        if (s == j) sigma[s] = i; else
+          sigma[s] = s;
+    last = new ChainLink<>(last, sigma);
+    result.add(last);
+
+    last = new ChainLink<>(last, bP);
+    result.add(last);
+
+    last = new ChainLink<>(last, sigma);
+    result.add(last);
+
+    return result;
+  }
+
   public static void main(String[] args) {
     AlphabetGroupStructure ags = AlphabetGroupStructure.INSTANCE;
     ClassifyingSpace<String> bg = new ClassifyingSpace<String>();
@@ -46,8 +74,14 @@ public class ConsoleMain {
     List<String> basePoint = new ArrayList<String>(); basePoint.add(""); basePoint.add(""); basePoint.add("");
     List<String> twistedPoint = new ArrayList<String>(); twistedPoint.add("A"); twistedPoint.add(""); twistedPoint.add("");
     List<String> twistedPointB = new ArrayList<String>(); twistedPointB.add("B"); twistedPointB.add(""); twistedPointB.add("");
-    WreathProd<String> wp = new WreathProd<String>(3, ags);
-    List<ChainLink<String>> path = new LinkedList<ChainLink<String>>();
+    List<ChainLink<String>> path = new LinkedList<>();
+    List<ChainLink<String>> pathChain;
+    pathChain = wpath(ags, basePoint, new WreathProd<String>(3, ags), 0, 1, "A"); path.addAll(pathChain);
+    pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 2, "B"); path.addAll(pathChain);
+    pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 1, "a"); path.addAll(pathChain);
+    pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 2, "b"); path.addAll(pathChain);
+
+    /* WreathProd<String> wp = new WreathProd<String>(3, ags);
     ChainLink<String> last = new ChainLink<String>(wp, wp, basePoint, twistedPoint);
     path.add(last);
 
@@ -94,14 +128,21 @@ public class ConsoleMain {
     path.add(last);
 
     last = new ChainLink<>(last, basePoint);
-    path.add(last);
+    path.add(last); */
 
     WreathStructure<String> wreathStructure = new WreathStructure<>(ags, 3);
 
     //Project to S:
 
+    List<String> _last = null;
+    WreathProd<String> _elem = null;
     for (int i=0; i<path.size(); i++) {
+      if (_elem != null && !_elem.equals(path.get(i).g0) || _last != null && !_last.equals(path.get(i).x0))
+         System.out.print("<UNEQUAL>");
       System.out.println("i="+i+" ["+path.get(i).x1+", "+path.get(i).g1+"]");
+      //System.out.println("      ["+path.get(i).x1+", "+path.get(i).g1+"]");
+      _last = path.get(i).x1;
+      _elem = path.get(i).g1;
     }
 
     System.out.println();
@@ -158,13 +199,13 @@ public class ConsoleMain {
       com1 = WreathProd.componentwise_mul(ags, com1, diff1);
       com2 = WreathProd.componentwise_mul(ags, com2, diff2);
       System.out.println("i="+ i + " [" + diff1 + ", " + diff2 + "]" + " Cumulative = ["+com1+"; "+com2+"];");
-      System.out.println("HORN: "+ horn + ";\n Filler: "+com_simplex+"\n 1-edge: "+sag.face(com_simplex,2)+"\n");
-      System.out.println("ALTERNATIVE COM_SIMPLEX: "+ com_simplex2);
+      //System.out.println("HORN: "+ horn + ";\n Filler: "+com_simplex+"\n 1-edge: "+sag.face(com_simplex,2)+"\n");
+      //System.out.println("ALTERNATIVE COM_SIMPLEX: "+ com_simplex2);
     }
 
     System.out.println();
 
-    FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> me = Tests.m("AB");
+    /* FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> me = Tests.m("AB");
 
     me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 0), 0));
     me = FreeSimplicialAbelianGroup.LinearCombination.sub(me, sag.degeneracy(sag.face(me, 2), 1));
@@ -203,7 +244,7 @@ public class ConsoleMain {
 
     System.out.println("diff 0 = " + sag.face(me, 0));
     System.out.println("diff 1 = " + sag.face(me, 1));
-    System.out.println("diff 2 = " + sag.face(me, 2));
+    System.out.println("diff 2 = " + sag.face(me, 2)); */
 
 
     /*WreathProd<String> wreathProd1 = new WreathProd<String>(, new WreathProd<String>(3, ags, 0, 2));
