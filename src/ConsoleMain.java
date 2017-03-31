@@ -1,3 +1,5 @@
+import jdk.nashorn.internal.runtime.regexp.joni.ast.ConsAltNode;
+
 import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -7,6 +9,10 @@ import java.util.List;
  * Created by sxh on 28.12.16.
  */
 public class ConsoleMain {
+  public static AlphabetGroupStructure ags = AlphabetGroupStructure.INSTANCE;
+  public static ClassifyingSpace<String> bg = new ClassifyingSpace<String>();
+  public static FreeSimplicialAbelianGroup<ClassifyingSpace.ClassifyingSpaceElement<String>> sag = new FreeSimplicialAbelianGroup<>(bg);
+
 
   public static<T> FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<T>> zip(GroupStructure<T> ags, List<T> l1, List<T> l2) {
     List<T> l;
@@ -66,20 +72,45 @@ public class ConsoleMain {
     return result;
   }
 
-  public static void main(String[] args) {
-    AlphabetGroupStructure ags = AlphabetGroupStructure.INSTANCE;
-    ClassifyingSpace<String> bg = new ClassifyingSpace<String>();
-    FreeSimplicialAbelianGroup<ClassifyingSpace.ClassifyingSpaceElement<String>> sag = new FreeSimplicialAbelianGroup<>(bg);
+  public class FibreEdge {
+    public FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> h;
+    public List<String> pcomp;
+    public List<String> ncomp;
 
+    public FibreEdge(List<String> p, List<String> n) {
+      // PRECONDITION: "n" should consist of the same components as "p" (possibly in different order)
+      pcomp = new ArrayList<>();
+      ncomp = new ArrayList<>();
+      pcomp.addAll(p);
+      ncomp.addAll(n);
+      h = new FreeSimplicialAbelianGroup.LinearCombination<>(2);
+    }
+
+    public FibreEdge(FibreEdge fe1, FibreEdge fe2) {
+      FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> lin =
+        FreeSimplicialAbelianGroup.LinearCombination.sub(zip(ags, fe1.pcomp, fe2.ncomp), zip(ags, fe1.ncomp, fe2.ncomp));
+
+      List<FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>>> lst = new ArrayList<>();
+      lst.add(fe2.h); lst.add(null); lst.add(fe1.h); lst.add(lin);
+      Horn<FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>>> horn = new Horn<>(sag, lst);
+
+      FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> filler = SimplicialGroupStructure.findFiller(sag, horn);
+      h = sag.face(filler, 1);
+      pcomp = WreathProd.componentwise_mul(ags, fe1.pcomp, fe2.pcomp);
+      ncomp = WreathProd.componentwise_mul(ags, fe1.ncomp, fe2.ncomp);
+    }
+  }
+
+  public static void main(String[] args) {
     List<String> basePoint = new ArrayList<String>(); basePoint.add(""); basePoint.add(""); basePoint.add("");
     List<String> twistedPoint = new ArrayList<String>(); twistedPoint.add("A"); twistedPoint.add(""); twistedPoint.add("");
     List<String> twistedPointB = new ArrayList<String>(); twistedPointB.add("B"); twistedPointB.add(""); twistedPointB.add("");
     List<ChainLink<String>> path = new LinkedList<>();
     List<ChainLink<String>> pathChain;
     pathChain = wpath(ags, basePoint, new WreathProd<String>(3, ags), 0, 1, "A"); path.addAll(pathChain);
-    pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 2, "B"); path.addAll(pathChain);
-    pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 1, "a"); path.addAll(pathChain);
-    pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 2, "b"); path.addAll(pathChain);
+    pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 1, "B"); path.addAll(pathChain);
+    pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 1, "ab"); path.addAll(pathChain);
+    //pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 2, "b"); path.addAll(pathChain);
 
     /* WreathProd<String> wp = new WreathProd<String>(3, ags);
     ChainLink<String> last = new ChainLink<String>(wp, wp, basePoint, twistedPoint);
