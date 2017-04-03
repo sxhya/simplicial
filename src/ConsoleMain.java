@@ -85,7 +85,7 @@ public class ConsoleMain {
   //      =     s_0 p_0 -     s_2 d_3 s_0 p_0  +     s_2 p_3 -     s_1 d_2 s_0 p_0 +     s_1 d_3 s_0 p_0 -     s_1 p_3 +     s_1 p_2
   //d_1 w = d_1 s_0 p_0 - d_1 s_2 d_3 s_0 p_0  + d_1 s_2 p_3 - d_1 s_1 d_2 s_0 p_0 + d_1 s_1 d_3 s_0 p_0 - d_1 s_1 p_3 + d_1 s_1 p_2 =
   //      =         p_0 -         s_1 d_2 p_0  + s_1 d_1 p_3 -         s_0 d_1 p_0 +         s_0 d_2 p_0 -         p_3 +         p_2 =
-  //      = p_0 + p_2 - p_3 - s_1 d_2 p_0  + s_1 d_1 p_3 - s_0 d_1 p_0 + s_0 d_2 p_0 =
+  //      =         p_0 -                                 s_1 d_2 p_0  + s_1 d_1 p_3 - s_0 d_1 p_0 + s_0 d_2 p_0 - p_3 +         p_2=
 
 
 
