@@ -72,33 +72,91 @@ public class ConsoleMain {
     return result;
   }
 
-  public class FibreEdge {
-    public FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> h;
-    public List<String> pcomp;
-    public List<String> ncomp;
+  //w = s_0(p_0)
+  //w = w - s_2 d_3(w) + s_2(p_3)
+  //w = w - s_1 d_2(w) + s_1(p_2)
 
-    public FibreEdge(List<String> p, List<String> n) {
+  //p_0 = h_0
+  //p_1 = ?
+  //p_2 = h_1
+  //p_3 = композиция
+
+  //w     =     s_0 p_0 -     s_2 d_3 s_0 p_0  +     s_2 p_3 -     s_1 d_2 s_0 p_0 + s_1 d_2 s_2 d_3 s_0 p_0 - s_1 d_2 s_2 p_3 + s_1 p_2 =
+  //      =     s_0 p_0 -     s_2 d_3 s_0 p_0  +     s_2 p_3 -     s_1 d_2 s_0 p_0 +     s_1 d_3 s_0 p_0 -     s_1 p_3 +     s_1 p_2
+  //d_1 w = d_1 s_0 p_0 - d_1 s_2 d_3 s_0 p_0  + d_1 s_2 p_3 - d_1 s_1 d_2 s_0 p_0 + d_1 s_1 d_3 s_0 p_0 - d_1 s_1 p_3 + d_1 s_1 p_2 =
+  //      =         p_0 -         s_1 d_2 p_0  + s_1 d_1 p_3 -         s_0 d_1 p_0 +         s_0 d_2 p_0 -         p_3 +         p_2 =
+  //      = p_0 + p_2 - p_3 - s_1 d_2 p_0  + s_1 d_1 p_3 - s_0 d_1 p_0 + s_0 d_2 p_0 =
+
+
+
+  public static class FibreEdge<T> {
+    public FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<T>> h;
+    private GroupStructure<T> myGs;
+    public List<T> pcomp;
+    public List<T> ncomp;
+
+    public FibreEdge(List<T> p, List<T> n, GroupStructure<T> gs) {
       // PRECONDITION: "n" should consist of the same components as "p" (possibly in different order)
       pcomp = new ArrayList<>();
       ncomp = new ArrayList<>();
       pcomp.addAll(p);
       ncomp.addAll(n);
+      myGs = gs;
       h = new FreeSimplicialAbelianGroup.LinearCombination<>(2);
     }
 
-    public FibreEdge(FibreEdge fe1, FibreEdge fe2) {
-      FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> lin =
-        FreeSimplicialAbelianGroup.LinearCombination.sub(zip(ags, fe1.pcomp, fe2.ncomp), zip(ags, fe1.ncomp, fe2.ncomp));
+    public FibreEdge(FibreEdge<T> fe1, FibreEdge<T> fe2) {
+      myGs = fe1.myGs;
+      if (!myGs.equals(fe2.myGs)) throw new IllegalArgumentException();
 
-      List<FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>>> lst = new ArrayList<>();
+      FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<T>> lin =
+        FreeSimplicialAbelianGroup.LinearCombination.sub(zip(myGs, fe1.pcomp, fe2.pcomp), zip(myGs, fe1.ncomp, fe2.ncomp));
+
+      ClassifyingSpace<T> bg = new ClassifyingSpace<T>();
+      FreeSimplicialAbelianGroup<ClassifyingSpace.ClassifyingSpaceElement<T>> sag = new FreeSimplicialAbelianGroup<>(bg);
+
+      List<FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<T>>> lst = new ArrayList<>();
       lst.add(fe2.h); lst.add(null); lst.add(fe1.h); lst.add(lin);
-      Horn<FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>>> horn = new Horn<>(sag, lst);
+      Horn<FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<T>>> horn = new Horn<>(sag, lst);
 
-      FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<String>> filler = SimplicialGroupStructure.findFiller(sag, horn);
+      //  = p_0 + p_2 - p_3 - s_1 d_2 p_0  + s_1 d_1 p_3 + s_0 d_2 p_0 =
+      //     x     x     x         x              x             x
+
+        FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<T>> elem =
+        sag.mul(sag.mul(fe2.h, sag.mul(sag.inv(sag.degeneracy(sag.face(fe2.h, 2), 1)), sag.degeneracy(sag.face(fe2.h, 2), 0))), sag.mul(sag.inv(lin), sag.mul(fe1.h, sag.degeneracy(sag.face(lin, 1), 1))));
+
+      FreeSimplicialAbelianGroup.LinearCombination<ClassifyingSpace.ClassifyingSpaceElement<T>> filler = SimplicialGroupStructure.findFiller(sag, horn);
       h = sag.face(filler, 1);
-      pcomp = WreathProd.componentwise_mul(ags, fe1.pcomp, fe2.pcomp);
-      ncomp = WreathProd.componentwise_mul(ags, fe1.ncomp, fe2.ncomp);
+      pcomp = WreathProd.componentwise_mul(myGs, fe1.pcomp, fe2.pcomp);
+      ncomp = WreathProd.componentwise_mul(myGs, fe1.ncomp, fe2.ncomp);
     }
+
+    @Override
+    public String toString() {
+      return h.toString() + " = " + pcomp + " = " + ncomp;
+    }
+  }
+
+  public static<T> FibreEdge<T> wrapWithFibreEdge(GroupStructure<T> gs, List<ChainLink<T>> path) {
+    FibreEdge<T> result = null;
+    for (int i=0; i<path.size(); i++) {
+      List<T> x0 = path.get(i).x0;
+      List<T> y0 = path.get(i).g0.act(x0);
+      List<T> x1 = path.get(i).x1;
+      List<T> y1 = path.get(i).g1.act(x1);
+      List<T> diff1 = WreathProd.componentwise_mul(gs, WreathProd.componentwise_inv(gs, x0), x1);
+      List<T> diff2 = WreathProd.componentwise_mul(gs, WreathProd.componentwise_inv(gs, y0), y1);
+
+      boolean allTrivial = true;
+
+      for (T t : diff1) if (t != gs.unit()) allTrivial = false;
+      for (T t : diff2) if (t != gs.unit()) allTrivial = false;
+
+      if (allTrivial) continue;
+      FibreEdge<T> fe = new FibreEdge<>(diff1, diff2, gs);
+      if (result == null) result = fe; else result = new FibreEdge<T>(result, fe);
+    }
+    return result;
   }
 
   public static void main(String[] args) {
@@ -106,11 +164,17 @@ public class ConsoleMain {
     List<String> twistedPoint = new ArrayList<String>(); twistedPoint.add("A"); twistedPoint.add(""); twistedPoint.add("");
     List<String> twistedPointB = new ArrayList<String>(); twistedPointB.add("B"); twistedPointB.add(""); twistedPointB.add("");
     List<ChainLink<String>> path = new LinkedList<>();
-    List<ChainLink<String>> pathChain;
-    pathChain = wpath(ags, basePoint, new WreathProd<String>(3, ags), 0, 1, "A"); path.addAll(pathChain);
-    pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 1, "B"); path.addAll(pathChain);
-    pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 1, "ab"); path.addAll(pathChain);
-    //pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 2, "b"); path.addAll(pathChain);
+    List<ChainLink<String>> pathChain = new ArrayList<>();
+    FibreEdge<String> fe1 = wrapWithFibreEdge(ags, wpath(ags, basePoint, new WreathProd<>(3, ags), 0, 1, "A"));
+    FibreEdge<String> fe2 = wrapWithFibreEdge(ags, wpath(ags, basePoint, new WreathProd<>(3, ags), 0, 1, "B"));
+    FibreEdge<String> fe3 = wrapWithFibreEdge(ags, wpath(ags, basePoint, new WreathProd<>(3, ags), 0, 1, "ab"));
+
+    FibreEdge<String> composante = new FibreEdge<String>(new FibreEdge<String>(fe1, fe2), fe3);
+    System.out.println(composante);
+    //pathChain = wpath(ags, basePoint, new WreathProd<String>(3, ags), 0, 1, "A"); path.addAll(pathChain);
+    //pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 1, "B"); path.addAll(pathChain);
+    //pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 1, "ab"); path.addAll(pathChain);
+   // pathChain = wpath(ags, pathChain.get(pathChain.size()-1).x1, pathChain.get(pathChain.size()-1).g1, 0, 2, "b"); path.addAll(pathChain);
 
     /* WreathProd<String> wp = new WreathProd<String>(3, ags);
     ChainLink<String> last = new ChainLink<String>(wp, wp, basePoint, twistedPoint);
